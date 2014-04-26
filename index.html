@@ -1,15 +1,45 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <script src="http://code.createjs.com/easeljs-0.7.0.min.js"></script>
+    <script src="http://code.createjs.com/easeljs-0.7.1.min.js"></script>
     <script>
+
+	var KEYCODE_ENTER = 13;		//usefull keycode
+	var KEYCODE_SPACE = 32;		//usefull keycode
+	var KEYCODE_UP = 38;		//usefull keycode
+	var KEYCODE_LEFT = 37;		//usefull keycode
+	var KEYCODE_RIGHT = 39;		//usefull keycode
+	var KEYCODE_W = 87;			//usefull keycode
+	var KEYCODE_A = 65;			//usefull keycode
+	var KEYCODE_D = 68;			//usefull keycode
+
+
+    
         function init() {
-            // code here.
+
+			var stage = new createjs.Stage("canvas");
+
         }
+
+        	//allow for WASD and arrow control scheme
+		function handleKeyDown(e) {
+			//cross browser issues exist
+			if(!e){ var e = window.event; }
+			switch(e.keyCode) {
+				case KEYCODE_SPACE:	shootHeld = true; return false;
+				case KEYCODE_A:
+				case KEYCODE_LEFT:	lfHeld = true; return false;
+				case KEYCODE_D:
+				case KEYCODE_RIGHT: rtHeld = true; return false;
+				case KEYCODE_W:
+				case KEYCODE_UP:	fwdHeld = true; return false;
+				case KEYCODE_ENTER:	 if(canvas.onclick == handleClick){ handleClick(); }return false;
+			}
+		}
     </script>
 </head>
 <body onLoad="init();">
-    <canvas id="demoCanvas" width="500" height="300">
+    <canvas id="canvas" width="1000" height="800">
         alternate content
     </canvas>
 </body>

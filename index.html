@@ -1,8 +1,35 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <script src="http://code.createjs.com/easeljs-0.7.1.min.js"></script>
-    <script>
+    	<!-- Note: All core EaselJS classes are listed here: -->
+	<script type="text/javascript" src="../src/createjs/events/Event.js"></script>
+	<script type="text/javascript" src="../src/createjs/events/EventDispatcher.js"></script>
+	<script type="text/javascript" src="../src/createjs/utils/IndexOf.js"></script>
+	<script type="text/javascript" src="../src/easeljs/utils/UID.js"></script>
+	<script type="text/javascript" src="../src/easeljs/utils/Ticker.js"></script>
+	<script type="text/javascript" src="../src/easeljs/geom/Matrix2D.js"></script>
+	<script type="text/javascript" src="../src/easeljs/geom/Point.js"></script>
+	<script type="text/javascript" src="../src/easeljs/geom/Rectangle.js"></script>
+	<script type="text/javascript" src="../src/easeljs/display/Shadow.js"></script>
+	<script type="text/javascript" src="../src/easeljs/display/SpriteSheet.js"></script>
+	<script type="text/javascript" src="../src/easeljs/display/Graphics.js"></script>
+	<script type="text/javascript" src="../src/easeljs/display/DisplayObject.js"></script>
+	<script type="text/javascript" src="../src/easeljs/display/Container.js"></script>
+	<script type="text/javascript" src="../src/easeljs/display/Stage.js"></script>
+	<script type="text/javascript" src="../src/easeljs/display/Bitmap.js"></script>
+	<script type="text/javascript" src="../src/easeljs/display/Sprite.js"></script>
+	<script type="text/javascript" src="../src/easeljs/display/BitmapAnimation.js"></script>
+	<script type="text/javascript" src="../src/easeljs/display/BitmapText.js"></script>
+	<script type="text/javascript" src="../src/easeljs/display/Shape.js"></script>
+	<script type="text/javascript" src="../src/easeljs/display/Text.js"></script>
+	<script type="text/javascript" src="../src/easeljs/display/DOMElement.js"></script>
+	<script type="text/javascript" src="../src/easeljs/events/MouseEvent.js"></script>
+	<script type="text/javascript" src="../src/easeljs/filters/Filter.js"></script>
+	<script type="text/javascript" src="../src/easeljs/ui/ButtonHelper.js"></script>
+	<script type="text/javascript" src="../src/easeljs/ui/Touch.js"></script>
+	<script type="text/javascript" src="../src/easeljs/utils/SpriteSheetUtils.js"></script>
+	<script type="text/javascript" src="../src/easeljs/utils/SpriteSheetBuilder.js"></script>
+    <script type="text/javascript">
 
 	var KEYCODE_ENTER = 13;		//usefull keycode
 	var KEYCODE_SPACE = 32;		//usefull keycode
@@ -13,34 +40,80 @@
 	var KEYCODE_A = 65;			//usefull keycode
 	var KEYCODE_D = 68;			//usefull keycode
 
+	var room;
+	var stage;
 
-    
-        function init() {
+	function init() {
 
-			var stage = new createjs.Stage("canvas");
+		stage = new createjs.Stage("canvas");
+		var room;
 
-        }
 
-        	//allow for WASD and arrow control scheme
-		function handleKeyDown(e) {
-			//cross browser issues exist
-			if(!e){ var e = window.event; }
-			switch(e.keyCode) {
-				case KEYCODE_SPACE:	shootHeld = true; return false;
-				case KEYCODE_A:
-				case KEYCODE_LEFT:	lfHeld = true; return false;
-				case KEYCODE_D:
-				case KEYCODE_RIGHT: rtHeld = true; return false;
-				case KEYCODE_W:
-				case KEYCODE_UP:	fwdHeld = true; return false;
-				case KEYCODE_ENTER:	 if(canvas.onclick == handleClick){ handleClick(); }return false;
+		// var graphics = new createjs.Graphics();
+		// graphics.setStrokeStyle(1);
+		// graphics.beginStroke("black");
+	 //    graphics.moveTo(0,0); 
+	 //    graphics.lineTo(800, 0);
+		// graphics.lineTo(800, 600);
+	 // 	var shape = createjs.Shape.call(this,graphics);
+	 // 	stage.addChild(shape);
+
+		createjs.Ticker.addEventListener("tick", tick);
+	}
+
+
+	function tick(event) {
+
+		// render room
+		for (var i = 0; i<40; i++){
+			for (var j = 0 ; j < 30; j++) {
+				var shape = new createjs.Shape();
+ 				shape.graphics.beginFill("#ff0000").drawRect(0, 0, 20, 20);
+ 				shape.graphics.setStrokeStyle(1);
+ 				shape.graphics.beginStroke("black");
+ 				shape.x = i * 20;
+ 				shape.y = j * 20;
+				stage.addChild(shape);
 			}
 		}
-    </script>
-</head>
-<body onLoad="init();">
-    <canvas id="canvas" width="1000" height="800">
-        alternate content
-    </canvas>
-</body>
-</html>
+
+		//call sub ticks
+		stage.update(event);
+	}
+
+	function renderTile(x, y) {
+		if (room[x][y] == '') {
+
+		}
+	}
+
+	//allow for WASD and arrow control scheme
+	function handleKeyDown(e) {
+	//cross browser issues exist
+		if(!e){ var e = window.event; }
+		switch(e.keyCode) {
+			case KEYCODE_SPACE:	shootHeld = true; return false;
+			case KEYCODE_A:
+			case KEYCODE_LEFT:	lfHeld = true; return false;
+			case KEYCODE_D:
+			case KEYCODE_RIGHT: rtHeld = true; return false;
+			case KEYCODE_W:
+			case KEYCODE_UP:	fwdHeld = true; return false;
+			case KEYCODE_ENTER:	 if(canvas.onclick == handleClick){ handleClick(); }return false;
+		}
+	}
+
+	// var data = {
+	// 	images: [playerImage, "playerImage.jpg"],
+	// 	frames: {width:50, height:50},
+	// };
+	// var spriteSheet = new createjs.SpriteSheet(data);
+
+	</script>
+	</head>
+	<body onLoad="init();">
+		<canvas id="canvas" width="1000" height="800">
+			<!-- alternate content -->
+		</canvas>
+	</body>
+	</html>

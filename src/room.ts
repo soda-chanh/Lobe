@@ -25,28 +25,25 @@ class StagedObject {
 class Tile implements StagedObject {
   tileId: number;
 }
-class GenericNumber<T> {
-  zeroValue: T;
-  add: (x: T, y: T) => T;
-}
 interface StringDict {
   [index: string]: number;
 }
-class FigureDictionary<T> {
-  dict: T[];
+class Dictionary<T> {
   keys: StringDict; 
-  get(key: string): Figure {
+  private nextIndex = 0;
+  constructor() {
+    this.keys = {};
+    this.dict = [];
+  }
+  get(key: string): T {
     return dict[this.keys[key]];
   }
-  put(key: string, value: Figure): void {
-    if this.keys[contains]
+  put(key: string, value: T): void {
+    if (this.keys[contains]
     this.dict[key] = value;
   }
 }
 
-interface Mask {};
-class Tile extends StageObject {
-}
 class Thing extends StagedObject {
   point: Point;
   room: Room;

@@ -171,6 +171,7 @@ export class Player implements StagedObject {
     this.point.x = room.start.x;  
     this.point.y = room.start.y;
     this.posAt(room.start.x, room.start.y);
+    this.addToStage(this.room.stage);
   }
   point: Point;
   moveTo(x: number, y: number) {

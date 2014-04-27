@@ -1,5 +1,4 @@
 module Lobe {
-export var player: any;
 var tileH: number = 20;
 var tileW: number = 20;
 var cols: number = 40;
@@ -134,6 +133,9 @@ export class Room {
       }
     }
   }
+  isMasked(x: number, y: number): boolean {
+    return false;
+  }
   tileAt(x: number, y: number): Tile {
     return this.tiles[y][x];
   }
@@ -151,6 +153,57 @@ export class Room {
   }
 }
 
+export class Player implements StagedObject {
+  constructor() {
+    this.stagePoint = new Point(0, 0);
+    this.point = new Point(0, 0); 
+  }
+  room: Room;
+  addToRoom(room: Room) {
+    this.room = room;
+  }
+  point: Point;
+  moveTo(x: number, y: number) {
+    if (x >= 0 && x < cols || y >= 0 || y < rows) {
+      if (!this.room.isMasked(x, y)) {
+        new Point(x, y)
+        this.onWallMove(new Point(x, y));
+      } else {
+        var p:Point = new Point(this.point.x, this.point.y);
+        this.point.x = x;
+        this.point.y = y;
+        this.onSuccessfulMove(p);
+        this.posAt(x, y);
+      }
+    } else {
+      this.onOutOfBoundsMove(new Point(x, y));
+    }
+  }
+  moveLeft() {
+    this.moveTo(this.point.x - 1, this.point.y);
+  }
+  moveRight() {
+    this.moveTo(this.point.x + 1, this.point.y);
+  }
+  moveUp() {
+    this.moveTo(this.point.x, this.point.y - 1);
+  }
+  moveDown() {
+    this.moveTo(this.point.x, this.point.y + 1);
+  }
+  onSuccessfulMove: (oldPoint: Point) => void;
+  onWallMove: (attemptedPoint: Point) => void;
+  onOutOfBoundsMove: (attemptedPoint: Point) => void;
+  // StagedObject
+  stagedObject: any; 
+  stagePoint: Point;
+  posAt: (x:number, y: number) => void;
+  updateFigure: (figure: Figure) => void;
+  replaceObject: (object: any) => void;
+  addToStage: (stage: any) => void;
+  resetPos: () => void;
+  restage: (stage?: any) => void;
+}
 /*
 class Thing implements StagedObject {
   point: Point;
@@ -167,6 +220,7 @@ class Thing implements StagedObject {
 */
 export var figures: Dictionary<Figure> = new Dictionary<Figure>();
 
+export var player = new Player();
 /*
 class Room {
   backgroundLayer:Tile[][];

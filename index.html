@@ -43,21 +43,63 @@
 
 	var room;
 	var stage;
+	var player;
+
+	document.onkeydown = handleKeyDown;
 
 	function init() {
 
 		stage = new createjs.Stage("canvas");
 		var room;
 
+		// draw background
+		for (var i = 0; i<40; i++){
+			for (var j = 0 ; j < 30; j++) {
+				var shape = new createjs.Shape();
+ 				shape.graphics.beginFill("#ff0000").drawRect(i * 20,j * 20, 20, 20);
+ 				shape.graphics.setStrokeStyle(1);
+ 				shape.graphics.beginStroke("black");
+				stage.addChild(shape);
+			}
+		}
 
-		// var graphics = new createjs.Graphics();
-		// graphics.setStrokeStyle(1);
-		// graphics.beginStroke("black");
-	 //    graphics.moveTo(0,0); 
-	 //    graphics.lineTo(800, 0);
-		// graphics.lineTo(800, 600);
-	 // 	var shape = createjs.Shape.call(this,graphics);
-	 // 	stage.addChild(shape);
+		// draw lines
+		var line = new createjs.Shape();
+		line.graphics.setStrokeStyle(2);
+		line.graphics.beginStroke("black");
+		for (var i = 0; i < 40; i++) {
+			for (var j = 0; j < 30; j++) {
+				line.graphics.moveTo(0, j * 20);
+				line.graphics.lineTo(800, j * 20);
+			}
+			line.graphics.moveTo(i * 20, 0);
+			line.graphics.lineTo(i * 20, 600);
+		}
+		line.graphics.endStroke();
+		stage.addChild(line);
+		stage.update();
+
+		// draw player
+		player = new createjs.Shape();
+		player.graphics.beginFill("black").drawCircle(10, 10, 10);
+		stage.addChild(player);
+
+		// sprites
+		var spriteData = {
+			images: ["resources/marioSprites.png"],
+			frames: [
+	            // x, y, width, height, imageIndex, regX, regY
+	            [0,0,20,20,0,0,0],
+	            [0,0,20,20,1,32,64],
+	            [0,0,20,20,2,32,64]
+        	]
+		};
+ 		var spriteSheet = new createjs.SpriteSheet(spriteData);
+ 		var sprite = new createjs.Sprite(spriteSheet, 0);
+ 		sprite.x = 20;
+ 		sprite.y = 20;
+ 		stage.addChild(sprite);
+ 		console.log(sprite);
 
 		createjs.Ticker.addEventListener("tick", tick);
 	}
@@ -65,18 +107,7 @@
 
 	function tick(event) {
 
-		// render room
-		for (var i = 0; i<40; i++){
-			for (var j = 0 ; j < 30; j++) {
-				var shape = new createjs.Shape();
- 				shape.graphics.beginFill("#ff0000").drawRect(0, 0, 20, 20);
- 				shape.graphics.setStrokeStyle(1);
- 				shape.graphics.beginStroke("black");
- 				shape.x = i * 20;
- 				shape.y = j * 20;
-				stage.addChild(shape);
-			}
-		}
+
 
 		//call sub ticks
 		stage.update(event);
@@ -91,12 +122,37 @@
 	//allow for WASD and arrow control scheme
 	function handleKeyDown(e) {
 	//cross browser issues exist
-		if(!e){ var e = window.event; }
+	if(!e){ var e = window.event; }
 		switch(e.keyCode) {
-			case KEYCODE_LEFT:	Lobe.player.moveLeft();
-			case KEYCODE_RIGHT: Lobe.player.moveRight();
-			case KEYCODE_UP:	Lobe.player.moveUp();
-			case KEYCODE_DOWN:  Lobe.player.moveDown();
+			case KEYCODE_LEFT:	{
+				//Lobe.player.moveLeft();
+				console.log('left');
+				player.x -= 20;
+				e.preventDefault();
+				break;
+			}
+			case KEYCODE_RIGHT: {
+
+				//Lobe.player.moveRight();
+				player.x += 20;	
+				e.preventDefault();
+				break;
+			}
+			case KEYCODE_UP:	{
+
+				//Lobe.player.moveUp();
+				console.log('up');
+				player.y -= 20;	
+				e.preventDefault();
+				break;
+			}
+			case KEYCODE_DOWN:  {
+
+				//Lobe.player.moveDown();
+				player.y += 20;	
+				e.preventDefault();
+				break;
+			}
 		}
 	}
 

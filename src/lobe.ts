@@ -175,9 +175,8 @@ export class Player implements StagedObject {
   }
   point: Point;
   moveTo(x: number, y: number) {
-    if (x >= 0 && x < cols || y >= 0 || y < rows) {
-      if (!this.room.isMasked(x, y)) {
-        new Point(x, y)
+    if (x >= 0 && x < cols && y >= 0 && y < rows) {
+      if (this.room.isMasked(x, y)) {
         this.room.onWallMove(new Point(x, y));
       } else {
         var p:Point = new Point(this.point.x, this.point.y);

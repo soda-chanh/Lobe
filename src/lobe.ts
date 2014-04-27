@@ -68,7 +68,7 @@ export class Tile implements StagedObject {
   stagePoint: Point;
   posAt: (x:number, y: number) => void;
   updateFigure: (figure: Figure) => void;
-  replaceObject: (object: any) => void;
+replaceObject: (object: any) => void;
   addToStage: (stage: any) => void;
   resetPos: () => void;
   restage: (stage?: any) => void;

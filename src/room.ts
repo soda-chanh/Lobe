@@ -1,3 +1,4 @@
+/*
 interface Figure {
   create: () => any;
 }
@@ -99,4 +100,5 @@ class Player extends Thing {
 
 }
 
+*/
 

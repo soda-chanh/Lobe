@@ -19,6 +19,7 @@
 
 function init() {
 	Lobe = window.Lobe;
+	Lobe.init();
 			stage = new createjs.Stage("canvas");
 
 		var redFigure = {

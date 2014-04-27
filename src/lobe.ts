@@ -51,8 +51,8 @@ export class StagedObject {
     var oldStage:any;
     if (stage != null) {
       oldStage = this.stagedObject.getStage();
-      if (oldStage == null) {
-        oldStage.removechild(this.stagedObject);
+      if (oldStage != null) {
+        oldStage.removeChild(this.stagedObject);
       }
       stage.addChild(this.stagedObject);
     }
@@ -128,7 +128,9 @@ export class Room {
     for (var i:number=0; i < rows; i++) {
       this.tiles[i] = [];
       for (var j:number=0; j < cols; j++) {
-        this.tiles[i][j] = new Tile(defaultFigure, j, i);
+        var tile: Tile = new Tile(defaultFigure, j, i);
+        this.tiles[i][j] = tile;
+        tile.addToStage(stage);
       }
     }
   }

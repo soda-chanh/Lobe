@@ -1,4 +1,4 @@
-module Lobe {
+export module Lobe {
 var player: any;
 var tileH: number = 20;
 var tileW: number = 20;

@@ -162,7 +162,7 @@ class Thing implements StagedObject {
   }
 }
 */
-var figures: Dictionary<Figure>;
+var figures: Dictionary<Figure> = new Dictionary<Figure>();
 
 /*
 class Room {
@@ -178,5 +178,10 @@ class Room {
 }
 */
 
-}
+};
+
+
+lobe.init();
+console.log(lobe);
+
 

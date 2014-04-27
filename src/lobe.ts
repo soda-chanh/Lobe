@@ -1,8 +1,8 @@
 module Lobe {
-var tileH: number = 20;
-var tileW: number = 20;
-var cols: number = 40;
-var rows: number = 30;
+export var tileH: number = 40;
+export var tileW: number = 40;
+export var cols: number = 20;
+export var rows: number = 15;
 export class Point {
   constructor(x: number, y: number) {
     this.x = x;

@@ -11,9 +11,6 @@
 	var KEYCODE_A = 65;			//usefull keycode
 	var KEYCODE_D = 68;			//usefull keycode
 
-	var ROOM_WIDTH = 40;
-	var ROOM_HEIGHT = 30;
-
 	var room;
 	var stage;
 	var player;
@@ -28,7 +25,7 @@ function init() {
 		var redFigure = {
 			create: function() {
 				var shape = new createjs.Shape();
-				shape.graphics.beginFill("#ff0000").drawRect(0,0, 20, 20);
+				shape.graphics.beginFill("#ff0000").drawRect(0,0, Lobe.tileW, Lobe.tileH);
 				return shape;
 			} 
 		};
@@ -36,7 +33,7 @@ function init() {
 		var greyFigure = {
 			create: function() {
 				var shape = new createjs.Shape();
-				shape.graphics.beginFill("#7777777").drawRect(0, 0, 20, 20);
+				shape.graphics.beginFill("#7777777").drawRect(0, 0, Lobe.tileW, Lobe.tileH);
 				return shape;
 			} 
 		};
@@ -50,23 +47,23 @@ function init() {
 
 
 		// draw grey tiles
-		for (var i = 0; i < ROOM_WIDTH; i++) {
-			for (var j = 0; j < ROOM_HEIGHT; j++) {
-				room.tileAt(i, j);
-			}
-		}
+		// for (var i = 0; i < ROOM_WIDTH; i++) {
+		// 	for (var j = 0; j < ROOM_HEIGHT; j++) {
+		// 		room.tileAt(i, j);
+		// 	}
+		// }
 
 		// draw lines
 		var line = new createjs.Shape();
 		line.graphics.setStrokeStyle(2);
 		line.graphics.beginStroke("black");
-		for (var i = 0; i < 41; i++) {
-			for (var j = 0; j < 31; j++) {
-				line.graphics.moveTo(0, j * 20);
-				line.graphics.lineTo(800, j * 20);
+		for (var i = 0; i < Lobe.cols+1; i++) {
+			for (var j = 0; j < Lobe.rows+1; j++) {
+				line.graphics.moveTo(0, j * Lobe.tileH);
+				line.graphics.lineTo(Lobe.tileW * Lobe.cols, j * Lobe.tileW);
 			}
-			line.graphics.moveTo(i * 20, 0);
-			line.graphics.lineTo(i * 20, 600);
+			line.graphics.moveTo(i * Lobe.tileH, 0);
+			line.graphics.lineTo(i * Lobe.tileW, Lobe.tileH * Lobe.rows);
 		}
 		line.graphics.endStroke();
 		stage.addChild(line);
@@ -79,17 +76,18 @@ function init() {
 
 		// spritesheet
 		var spriteData = {
-			images: ["resources/marioSprites2.png"],
+			images: ["resources/marioSprites.png"],
 			frames: [
 	            // x, y, width, height, imageIndex, regX, regY
-	            [0, 0,20,20,0],
-	            [20,0,20,20,0],
-	            [40,0,20,20,0],
-	            [60,0,20,20,0]
+	            [0, 0,40,40,0],
+	            [40,0,40,40,0],
+	            [80,0,40,40,0],
+	            [120,0,40,40,0]
         	],
 			animations: {
-			         stand: 0,
-			         spinAround: [0,1,2,3]
+			         stand: [0,1],
+			         spinAround: [2,3],
+			         wall: 3
 			     }
 		};
 
@@ -99,29 +97,40 @@ function init() {
  		sprite.x = 20;
  		sprite.y = 20;
 
-		Lobe.player.replaceObject(sprite);
-		Lobe.player.moveToRoom(room);
-
-
-
  		// draw animated mario
  		var sprite2 = new createjs.Sprite(spriteSheet, "spinAround");
  		sprite2.x = 60;
  		sprite2.y = 20;
- 		stage.addChild(sprite2);
+
+ 		// wall mario
+ 		var sprite3 = new createjs.Sprite(spriteSheet, "wall");
+
+
+		Lobe.player.replaceObject(sprite2);
+		Lobe.player.moveToRoom(room);
+
 
 		createjs.Ticker.addEventListener("tick", tick);
-
+		var backwards = false;
 
 		// set up callbacks for player movement
 		room.onWallMove = function(p) {
-
+			Lobe.player.replaceObject(sprite3);
 		};
-		room.onSuccessfulMove = function(p) {
+		room.onSuccessfulMove = function(p) { 
+			if (backwards) {
+
+				backwards = false;
+				Lobe.player.replaceObject(sprite2);
+			} else {
+				backwards = true;
+				Lobe.player.replaceObject(sprite);
+			}
+
 
 		};
 		room.onOutOfBoundsMove = function(p) {
-
+			Lobe.player.replaceObject(sprite3);
 		};
 
 }
@@ -166,4 +175,3 @@ function init() {
 			}
 		}
 	}
-

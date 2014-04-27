@@ -123,7 +123,9 @@ export class Dictionary<T> {
 export class Room {
   stage: any;
   tiles: Tile[][];
+  start: Point;
   constructor(stage: any, defaultFigure: Figure) {
+    this.start = new Point(0, 0);
     this.stage = stage;
     this.tiles = [];
     for (var i:number=0; i < rows; i++) {
@@ -166,6 +168,9 @@ export class Player implements StagedObject {
   room: Room;
   moveToRoom(room: Room) {
     this.room = room;
+    this.point.x = room.start.x;  
+    this.point.y = room.start.y;
+    this.posAt(room.start.x, room.start.y);
   }
   point: Point;
   moveTo(x: number, y: number) {

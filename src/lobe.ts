@@ -126,6 +126,7 @@ export class Room {
     this.stage = stage;
     this.tiles = [];
     for (var i:number=0; i < rows; i++) {
+      this.tiles[i] = [];
       for (var j:number=0; j < cols; j++) {
         this.tiles[i][j] = new Tile(defaultFigure, j, i);
       }

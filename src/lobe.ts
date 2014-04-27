@@ -1,10 +1,10 @@
-export module Lobe {
-var player: any;
+module Lobe {
+export var player: any;
 var tileH: number = 20;
 var tileW: number = 20;
 var cols: number = 40;
 var rows: number = 30;
-class Point {
+export class Point {
   constructor(x: number, y: number) {
     this.x = x;
     this.y = y;
@@ -12,10 +12,10 @@ class Point {
   x: number;
   y: number;
 }
-interface Figure {
+export interface Figure {
   create: () => any;
 }
-class StagedObject {
+export class StagedObject {
   stagedObject: any;
   stagePoint: Point;
   posAt(x: number, y: number):void {
@@ -59,7 +59,7 @@ class StagedObject {
     this.resetPos();
   }
 }
-class Tile implements StagedObject {
+export class Tile implements StagedObject {
   constructor(figure: Figure, x: number, y: number) {
     this.stagePoint = new Point(x, y);
     this.stagedObject = figure.create();
@@ -80,13 +80,13 @@ function applyMixins(derivedCtor: any, baseCtors: any[]) {
     Object.getOwnPropertyNames(baseCtor.prototype).forEach(name => {
       derivedCtor.prototype[name] = baseCtor.prototype[name]; }) }); 
 }
-function init() {
+export function init() {
   applyMixins(Tile, [StagedObject]);
 }
-interface StringDict {
+export interface StringDict {
   [index: string]: number;
 }
-class Dictionary<T> {
+export class Dictionary<T> {
   index: StringDict; 
   values: T[];
   keys: string[];
@@ -119,7 +119,7 @@ class Dictionary<T> {
   }
 }
 
-class Room {
+export class Room {
   stage: any;
   tiles: Tile[][];
   constructor(stage: any, defaultFigure: Figure) {
@@ -162,7 +162,7 @@ class Thing implements StagedObject {
   }
 }
 */
-var figures: Dictionary<Figure> = new Dictionary<Figure>();
+export var figures: Dictionary<Figure> = new Dictionary<Figure>();
 
 /*
 class Room {
@@ -179,9 +179,3 @@ class Room {
 */
 
 };
-
-
-lobe.init();
-console.log(lobe);
-
-

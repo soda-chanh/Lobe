@@ -18,6 +18,7 @@
 	document.onkeydown = handleKeyDown;
 
 function init() {
+	Lobe = window.Lobe;
 			stage = new createjs.Stage("canvas");
 
 		var redFigure = {
@@ -149,3 +150,4 @@ function init() {
 			}
 		}
 	}
+

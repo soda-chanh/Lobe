@@ -81,6 +81,8 @@ function applyMixins(derivedCtor: any, baseCtors: any[]) {
 }
 export function init() {
   applyMixins(Tile, [StagedObject]);
+  applyMixins(Player, [StagedObject]);
+  player = new Player();
 }
 export interface StringDict {
   [index: string]: number;
@@ -136,6 +138,9 @@ export class Room {
   isMasked(x: number, y: number): boolean {
     return false;
   }
+  onSuccessfulMove: (oldPoint: Point) => void;
+  onWallMove: (attemptedPoint: Point) => void;
+  onOutOfBoundsMove: (attemptedPoint: Point) => void;
   tileAt(x: number, y: number): Tile {
     return this.tiles[y][x];
   }
@@ -159,7 +164,7 @@ export class Player implements StagedObject {
     this.point = new Point(0, 0); 
   }
   room: Room;
-  addToRoom(room: Room) {
+  moveToRoom(room: Room) {
     this.room = room;
   }
   point: Point;
@@ -167,16 +172,16 @@ export class Player implements StagedObject {
     if (x >= 0 && x < cols || y >= 0 || y < rows) {
       if (!this.room.isMasked(x, y)) {
         new Point(x, y)
-        this.onWallMove(new Point(x, y));
+        this.room.onWallMove(new Point(x, y));
       } else {
         var p:Point = new Point(this.point.x, this.point.y);
         this.point.x = x;
         this.point.y = y;
-        this.onSuccessfulMove(p);
+        this.room.onSuccessfulMove(p);
         this.posAt(x, y);
       }
     } else {
-      this.onOutOfBoundsMove(new Point(x, y));
+      this.room.onOutOfBoundsMove(new Point(x, y));
     }
   }
   moveLeft() {
@@ -191,9 +196,6 @@ export class Player implements StagedObject {
   moveDown() {
     this.moveTo(this.point.x, this.point.y + 1);
   }
-  onSuccessfulMove: (oldPoint: Point) => void;
-  onWallMove: (attemptedPoint: Point) => void;
-  onOutOfBoundsMove: (attemptedPoint: Point) => void;
   // StagedObject
   stagedObject: any; 
   stagePoint: Point;
@@ -220,7 +222,7 @@ class Thing implements StagedObject {
 */
 export var figures: Dictionary<Figure> = new Dictionary<Figure>();
 
-export var player = new Player();
+export var player;
 /*
 class Room {
   backgroundLayer:Tile[][];

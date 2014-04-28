@@ -42,7 +42,7 @@ function init() {
 	Lobe.init();
 	initializeDarkFloor();
 	Lobe.editor = new Lobe.Editor();
-	Lobe.editor.replaceRoom = false;
+	Lobe.editor.replaceRoom = true;
 	stage = new createjs.Stage("canvas");
 	Lobe.editMode = false;
 
@@ -117,12 +117,7 @@ function createTileFigures() {
 
 
 function toggleEditMode() {
-
-
 	Lobe.toggleEditMode();
-	// player.saveRoom inEditMode
-	// player.loadRoom inEditMode
-
 	if (Lobe.editMode) {
 		displayText("Edit Mode!");	
 	} else {
@@ -208,9 +203,18 @@ function editWithKeyCode(key) {
 			break;
 		}
 		case KEYCODE_S: {
+			console.log('hey');
 			var s = Lobe.editor.saveRoomToString();
 			displayText(s);
+			var textArea = document.getElementById("textArea");
+			console.log('textArea = ' +textArea);
+			document.getElementById("textArea").style.display='block';
+			document.getElementById("textArea").value = s;
 			console.log(s);
+			break;
+		}
+		case KEYCODE_M: {
+			Lobe.editor.toggleMask();
 			break;
 		}
 	}

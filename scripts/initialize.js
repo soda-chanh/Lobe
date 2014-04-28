@@ -52,6 +52,7 @@ function init() {
 	Lobe.editor.replaceRoom = true;
 	stage = new createjs.Stage("canvas");
 	Lobe.editMode = false;
+	window.lobe.flashingSquares = [];
 
 	createTileFigures();
 	window.lobe.SpriteManager.registerTiles();
@@ -71,7 +72,7 @@ function initializeDarkFloor() {
 }
 
 function drawLines() {
-			// draw lines
+	// draw lines
 	var line = new createjs.Shape();
 	line.graphics.setStrokeStyle(2);
 	line.graphics.beginStroke("black");
@@ -90,11 +91,9 @@ function drawLines() {
 
 
 function drawPlayer() {
-
 	var playerSprite = window.lobe.SpriteManager.getPlayerSprite('stand');
 	Lobe.player.replaceObject(playerSprite);
 	Lobe.player.moveToRoom(room);
-
 }
 
 function createTileFigures() {
@@ -142,8 +141,23 @@ function toggleEditMode() {
 		textArea.style.display='none';
 	}
 }
+function addSquareFlash(t) {
+	t.stagedObject.alpha = 0;
+	window.lobe.flashingSquares.push(t);
+}
 
 function tick(event) {
+	var removeMe = []
+	for (var flash in window.lobe.flashingSquares){
+		var square = window.lobe.flashingSquares[flash];
+		square.stagedObject.alpha += 0.05;
+		if (square.stagedObject.alpha >= 1)	{
+			removeMe.push(flash);
+		}
+	}
+	for (var r in removeMe) {
+		window.lobe.flashingSquares.splice(r, 1);
+	}
 	stage.update(event);
 }
 
@@ -254,8 +268,6 @@ function displayText(string) {
 
 function setupGame1() {
 
-	console.log('manager = ' + window.lobe.RoomManager);
-
 	var roomData = window.lobe.RoomManager.room1Data();
 	room = new Lobe.Room(stage, roomData);
 	room.retileAll(Lobe.figures.get('blackFigure'));
@@ -286,49 +298,88 @@ function setupGame1() {
 		}
 		// on Win Game
 		displayText('Level 1');
+
+		// TEMP
+		room.restage(null);
+		setupGame2();
 	};
 
 	room.onOutOfBoundsMove = function(p) {
 	};
 
 	room.onEnterFinishMove = function(p) {
-		displayText('Finished Level 1! Now you can see....');
-
-		for (var i = 0; i<Lobe.cols; i++) {
-			for (var j = 0; j<Lobe.rows; j++) {
-				var tile = room.tileAt(i, j);
-
-			}
-		}
+		displayText('Finished Level 1!');
+		room.restage(null);
+		setupGame2();
 	};
 }
 
 
 function setupGame2() {
-	displayText('Level 2');
-	room = new Lobe.Room(stage, Lobe.figures.get('darkFloor'));
-	room.start = new Lobe.Point(0, 0);
+
+	var roomData = window.lobe.RoomManager.room2Data();
+
+	console.log('room data = '+roomData);
+	console.log('type = '+typeof(roomData));
+	room = new Lobe.Room(stage, roomData);
+	room.finish = new Lobe.Point(12,10);
+
+	displayText('Level 2');	
+	room.start = new Lobe.Point(Lobe.cols-1, Lobe.rows-1);
+
 	drawLines();
 	drawPlayer();
 
+	console.log(Lobe.player);
+	console.log(Lobe.player.stagedObject.getStage());
+
+	var tilePath = [{x:12, y:5},
+					{x:11, y:5},
+					{x:10, y:5},
+					{x:9, y:5},
+					{x:8, y:5},
+					{x:8, y:6},
+					{x:8, y:7},
+					{x:8, y:8},
+					{x:8, y:9},
+					{x:8, y:10},
+					{x:9, y:10},
+					{x:10, y:10},
+					{x:11, y:10},
+					{x:12, y:10}];
+
+	var playerTiles = [];
+
 	window.lobe.SoundManager.preloadAudioClips();
-
-
-	var backwards = false;
-	// set up callbacks for player movement
 	room.onWallMove = function(p) {
-		Lobe.player.replaceObject(sprite3);
 	};
-	room.onSuccessfulMove = function(p) { 
-		var tile = room.tileAt(Lobe.player.point.x, Lobe.player.point.y);
+	room.onSuccessfulMove = function(p) {
+		var point = Lobe.player.point;
+		var tile = room.tileAt(point.x, point.y);
 
+		var tileIndex = tilePath[playerTiles.length];
+		if (tileIndex.x == point.x && tileIndex.y == point.y) {
+			playerTiles.push(tile);
+			tile.updateFigure(Lobe.figures.values[playerTiles.length+5]);
+		} else {
+			for (var t in playerTiles) {
+				if (t != 0) {
+					playerTiles[t].updateFigure(Lobe.figures.values[0]);
+				} else {
+					playerTiles[t].updateFigure(Lobe.figures.values[2]);
+				}
+				addSquareFlash(playerTiles[t]);	
+			}
+			playerTiles = [];
+		}
 	};
 	room.onOutOfBoundsMove = function(p) {
-		Lobe.player.replaceObject(sprite3);
 	};
-
 	room.onEnterFinishMove = function(p) {
-
+		if (playerTiles.length == tilePath.length) {
+			displayText('Finished Level 2!');
+			room.restage(null);
+		}
 	};
 }
 

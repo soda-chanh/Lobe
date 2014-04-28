@@ -14,7 +14,7 @@
 			var animations = {};
 			for (var l=0; l < 6; l++) {
 				for (var j=0; j < 8; j++) {
-					frames[l * 8 + j] = [j * 32, l * 32, 32, 32, 0];
+					frames[j * 6 + l] = [j * 32, l * 32, 32, 32, 0];
 				}
 			}
 			console.log(frames);

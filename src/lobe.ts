@@ -246,6 +246,12 @@ export class Room {
       }
     }
   }
+  restage(stage:any) {
+    this.stage = stage;
+    this.visitTiles((tile: Tile) => {
+      tile.restage(null);
+    });
+  }
   visitTiles(f: (tile: Tile) => any): void {
     for (var i:number=0; i < rows; i++) {
       for (var j:number=0; j < cols; j++) {

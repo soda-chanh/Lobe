@@ -24,7 +24,7 @@
 				animations: {
 				         brightFloor: 5,
 				         yellowFloor: 2,
-				         darkFloor: 3
+				         darkFloor: 0
 				     }
 			};
 

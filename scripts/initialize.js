@@ -25,6 +25,13 @@
 	var KEYCODE_P = 80;			//usefull keycode
 	var KEYCODE_Q = 81;			//usefull keycode
 	var KEYCODE_S = 83;			//usefull keycode
+	var KEYCODE_T = 84;			//usefull keycode
+	var KEYCODE_U = 85;			//usefull keycode
+	var KEYCODE_V = 86;			//usefull keycode
+	var KEYCODE_W = 87;			//usefull keycode
+	var KEYCODE_X = 88;			//usefull keycode
+	var KEYCODE_Y = 89;			//usefull keycode
+	var KEYCODE_Z = 90;			//usefull keycode
 	var KEYCODE_F1 = 112;
 	var KEYCODE_1 = 49;
 	var KEYCODE_2 = 50;
@@ -192,16 +199,6 @@ function editWithKeyCode(key) {
 			Lobe.editor.placeTile('darkFloor');
 			break;
 		}
-		case KEYCODE_D:  {
-			break;
-		}
-		case KEYCODE_E: {
-			break;
-		}
-		case KEYCODE_M: {
-			Lobe.editor.toggleMask();
-			break;
-		}
 		case KEYCODE_S: {
 			console.log('hey');
 			var s = Lobe.editor.saveRoomToString();
@@ -215,6 +212,13 @@ function editWithKeyCode(key) {
 		}
 		case KEYCODE_M: {
 			Lobe.editor.toggleMask();
+			break;
+		}
+		default: {
+			var mm = key - KEYCODE_A;
+			if (mm >= 0) {
+				Lobe.editor.placeTile(Lobe.figures.key(mm));
+			}
 			break;
 		}
 	}

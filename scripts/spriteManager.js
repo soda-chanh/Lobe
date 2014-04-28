@@ -10,28 +10,29 @@
 		if (floorSpriteSheet) {
 			return floorSpriteSheet;
 		} else {
+			var frames = [];
+			var animations = {};
+			for (var i=0; i < 6; i++) {
+				for (var j=0; j < 8; j++) {
+					frames[i * 8 + j] = [j * 32, i * 32, 32, 32, 0];
+				}
+			}
+			animations.brightFloor = 5;
+			animations.yellowFloor = 2;
+			animations.darkFloor = 3;
+			for (var k=0; k < 48; k++) {
+				animations["tile" + k.toString()] = k+1;
+			}
 			var spriteData = {
 				images: ["resources/floorTiles2.png"],
-				frames: [
-		            // x, y, width, height, imageIndex, regX, regY
-		            [0,0,32,32,0],
-		            [0,32,32,32,0],
-		            [0,64,32,32,0],
-		            [0,96,32,32,0],
-		            [0,128,32,32,0],
-		            [0,160,32,32,0]
-		    	],
-				animations: {
-				         brightFloor: 5,
-				         yellowFloor: 2,
-				         darkFloor: 3
-				     }
+				frames: frames,
+				animations: animations
 			};
 
 			floorSpriteSheet = new createjs.SpriteSheet(spriteData);
 			return floorSpriteSheet;
 		}
-	}
+	};
 
 	self.playerSpriteSheet = function() {
 		if (playerSpriteSheet) {
@@ -56,23 +57,37 @@
 			playerSpriteSheet = new createjs.SpriteSheet(spriteData);
 			return playerSpriteSheet;
 		}
-	}
+	};
+	self.registerTiles = function () {
+		var s = "tile"; 
+		for (var i=0; i < 48; i++) {
+			(function (j) {
+				window.Lobe.figures.put('tile' + j.toString(),
+					self.getFloorFigure('tile' + j.toString()));
+				})(i);
+		}
+	};
+	self.getFloorFigure = function (str) {
+		var s = str;
+		return {create: function () {
+			return self.getFloorSprite(s);
+		}};
+	};
 
 	self.getFloorSprite = function (animation) {
-
 		var spriteSheet = self.floorSpriteSheet();
 		var floorSprite = new createjs.Sprite(self.floorSpriteSheet(), animation);
 		floorSprite.scaleX = 1.25;
 		floorSprite.scaleY = 1.25;
 
 		return floorSprite;
-	}
+	};
 
 	self.getPlayerSprite = function (animation) {
 		var sprite = new createjs.Sprite(self.playerSpriteSheet(), animation);
 		sprite.scaleX = .3077;
 		sprite.scaleY = .3077;
 		return sprite;
-	}
+	};
 
 }) ();

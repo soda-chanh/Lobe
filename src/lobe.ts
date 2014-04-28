@@ -153,7 +153,7 @@ export class RoomFile {
     this.start = new Point(0,0);
     this.finish = new Point(0,0);
     if (data) {
-      if (data instanceof String) {
+      if (typeof(data) == 'string') {
         this.parseFromString(data);
       } else {
         this.parse(data);
@@ -274,7 +274,7 @@ export class Editor {
       this.savedFigures[i] = [];
       this.maskTiles[i] = [];
       for (var j: number = 0; j < cols; j++) {
-        this.maskTiles[i][j] = new Tile(figures.get("darkFloor"), j, i);
+        this.maskTiles[i][j] = new Tile(figures.values[0], j, i);
       }
     }
     this.maskAlpha = .5;
@@ -394,7 +394,7 @@ export class Editor {
   }
   loadRoom(data: any) {
     if (editMode) {
-      if (data instanceof String) {
+      if (typeof(data) == 'string') {
         player.room.roomFile.parseFromString(data);
       } else {
         player.room.roomFile.parse(data);

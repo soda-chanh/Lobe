@@ -194,7 +194,7 @@ export class RoomFile {
     return data;
   }
   serializeToString(): string {
-    return JSON.stringify(this.serialize(), null, 1);
+    return JSON.stringify(this.serialize(), null, 0);
   }
 }
 

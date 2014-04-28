@@ -204,7 +204,9 @@ function editWithKeyCode(key) {
 			break;
 		}
 		case KEYCODE_S: {
-			displayText(Lobe.editor.saveRoomToString());
+			var s = Lobe.editor.saveRoomToString();
+			displayText(s);
+			console.log(s);
 			break;
 		}
 	}

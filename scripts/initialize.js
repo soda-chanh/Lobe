@@ -346,7 +346,7 @@ function setupGame2() {
 
 	var playerTiles = [];
 
-	window.lobe.SoundManager.preloadAudioClips();
+	// window.lobe.SoundManager.preloadAudioClips();
 	room.onWallMove = function(p) {
 	};
 	room.onSuccessfulMove = function(p) {

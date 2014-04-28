@@ -25,6 +25,9 @@
 	var KEYCODE_P = 80;			//usefull keycode
 	var KEYCODE_Q = 81;			//usefull keycode
 	var KEYCODE_F1 = 112;
+	var KEYCODE_1 = 49;
+	var KEYCODE_2 = 50;
+	var KEYCODE_3 = 51;
 
 	var room;
 	var stage;
@@ -37,39 +40,43 @@
 function init() {
 	Lobe = window.Lobe;
 	Lobe.init();
+	initializeDarkFloor();
+	// Lobe.editor = new Lobe.Editor();
 	stage = new createjs.Stage("canvas");
 	inEditMode = false;
 
-	drawRoom();
-	drawPlayer();
-
+	setupGame1();
 	createjs.Ticker.addEventListener("tick", tick);
 }
 
-function drawRoom() {
-	var redFigure = {
+function initializeDarkFloor() {
+	var floorFigure = {
 		create: function() {
-			var shape = new createjs.Shape();
-			shape.graphics.beginFill("#ff0000").drawRect(0,0, Lobe.tileW, Lobe.tileH);
-			return shape;
+			var floorSprite = window.lobe.SpriteManager.getFloorSprite('darkFloor');
+			return floorSprite;
 		} 
 	};
+	Lobe.figures.put('darkFloor', floorFigure);
+}
 
-	var greyFigure = {
-		create: function() {
-			var shape = new createjs.Shape();
-			shape.graphics.beginFill("#7777777").drawRect(0, 0, Lobe.tileW, Lobe.tileH);
-			return shape;
-		} 
-	};
+// function drawRoom() {
+// 	var redFigure = {
+// 		create: function() {
+// 			var shape = new createjs.Shape();
+// 			shape.graphics.beginFill("#ff0000").drawRect(0,0, Lobe.tileW, Lobe.tileH);
+// 			return shape;
+// 		} 
+// 	};
 
-	Lobe.figures.put('redTile', redFigure);
-	Lobe.figures.put('greyTile', greyFigure);
+// 	Lobe.figures.put('redTile', redFigure);
 	
-	room = new Lobe.Room(stage, Lobe.figures.get('redTile'));
-	room.start = new Lobe.Point(0, 0);
+// 	room = new Lobe.Room(stage, Lobe.figures.get('redTile'));
 
-		// draw lines
+// 	drawLines();
+// }
+
+function drawLines() {
+			// draw lines
 	var line = new createjs.Shape();
 	line.graphics.setStrokeStyle(2);
 	line.graphics.beginStroke("black");
@@ -93,27 +100,6 @@ function drawPlayer() {
 	Lobe.player.replaceObject(playerSprite);
 	Lobe.player.moveToRoom(room);
 
-		var backwards = false;
-	// set up callbacks for player movement
-	room.onWallMove = function(p) {
-		Lobe.player.replaceObject(sprite3);
-	};
-	room.onSuccessfulMove = function(p) { 
-		if (backwards) {
-
-			backwards = false;
-			var playerSprite = window.lobe.SpriteManager.getPlayerSprite('stand');
-			Lobe.player.replaceObject(playerSprite);
-		} else {
-			backwards = true;
-			var playerSprite = window.lobe.SpriteManager.getPlayerSprite('stand');
-			Lobe.player.replaceObject(playerSprite);
-		}
-
-	};
-	room.onOutOfBoundsMove = function(p) {
-		Lobe.player.replaceObject(sprite3);
-	};
 }
 
 
@@ -159,6 +145,19 @@ if(!e){ var e = window.event; }
 			e.preventDefault();
 			break;
 		}
+		case KEYCODE_1:  {
+			setupGame1();
+			break;
+		}
+		case KEYCODE_2:  {
+			setupGame2();
+			break;
+		}
+
+		case KEYCODE_3:  {
+			setupGame3();
+			break;
+		}
 		case KEYCODE_ENTER: {
 			toggleEditMode();
 			break;
@@ -171,7 +170,6 @@ if(!e){ var e = window.event; }
 }
 
 function editWithKeyCode(key) {
-	console.log('edit key ' +key);
 	switch(key) {
 		case KEYCODE_A:	{
 			var tile = room.tileAt(Lobe.player.point.x, Lobe.player.point.y);
@@ -210,4 +208,75 @@ function displayText(string) {
 	textDisplay.y = 650; 
 	textDisplay.textBaseline = "alphabetic";
 	stage.addChild(textDisplay);
+}
+
+
+function setupGame1() {
+
+	room = new Lobe.Room(stage, Lobe.figures.get('darkFloor'));
+	drawLines();
+	drawPlayer();
+
+	room.onWallMove = function(p) {
+	};
+
+	room.onSuccessfulMove = function(p) {
+
+		// on Win Game
+		displayText('Level 1');
+		var greyFigure = {
+			create: function() {
+				var shape = new createjs.Shape();
+				shape.graphics.beginFill("#444444").drawRect(0, 0, Lobe.tileW, Lobe.tileH);
+				return shape;
+			} 
+		};
+
+		Lobe.figures.put('greyTile', greyFigure);
+		room = new Lobe.Room(stage, Lobe.figures.get('greyTile'));
+		drawLines();
+		drawPlayer();
+	};
+
+	room.onOutOfBoundsMove = function(p) {
+	};
+}
+
+
+function setupGame2() {
+	displayText('Level 2');
+	room = new Lobe.Room(stage, Lobe.figures.get('darkFloor'));
+	room.start = new Lobe.Point(0, 0);
+	drawLines();
+	drawPlayer();
+
+	window.lobe.SoundManager.preloadAudioClips();
+
+
+	var backwards = false;
+	// set up callbacks for player movement
+	room.onWallMove = function(p) {
+		Lobe.player.replaceObject(sprite3);
+	};
+	room.onSuccessfulMove = function(p) { 
+		var tile = room.tileAt(Lobe.player.point.x, Lobe.player.point.y);
+
+	};
+	room.onOutOfBoundsMove = function(p) {
+		Lobe.player.replaceObject(sprite3);
+	};
+}
+
+
+function setupGame3() {
+	displayText('Level 3');
+	room = new Lobe.Room(stage, Lobe.figures.get('greyTile'));
+}
+
+
+// game 1
+function onFinishMove1() {
+	room = new Lobe.Room(stage, Lobe.figures.get('redTile'));
+	drawLines();
+	drawPlayer();
 }

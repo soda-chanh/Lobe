@@ -394,7 +394,11 @@ export class Editor {
   }
   loadRoom(data: any) {
     if (editMode) {
-      player.room.roomFile.parseFrom(data);
+      if (data instanceof String) {
+        player.room.roomFile.parseFromString(data);
+      } else {
+        player.room.roomFile.parse(data);
+      }
       this.refreshRoom();
     }
   }

@@ -298,10 +298,6 @@ function setupGame1() {
 		}
 		// on Win Game
 		displayText('Level 1');
-
-		// TEMP
-		room.restage(null);
-		setupGame2();
 	};
 
 	room.onOutOfBoundsMove = function(p) {
@@ -378,7 +374,7 @@ function setupGame2() {
 	room.onEnterFinishMove = function(p) {
 		if (playerTiles.length == tilePath.length) {
 			displayText('Finished Level 2!');
-			room.restage(null);
+			// room.restage(null);
 		}
 	};
 }

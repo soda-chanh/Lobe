@@ -24,6 +24,7 @@
 	var KEYCODE_O = 79;			//usefull keycode
 	var KEYCODE_P = 80;			//usefull keycode
 	var KEYCODE_Q = 81;			//usefull keycode
+	var KEYCODE_S = 83;			//usefull keycode
 	var KEYCODE_F1 = 112;
 	var KEYCODE_1 = 49;
 	var KEYCODE_2 = 50;
@@ -32,7 +33,6 @@
 	var room;
 	var stage;
 	var player;
-	var inEditMode;
 	var textDisplay;
 
 	document.onkeydown = handleKeyDown;
@@ -41,9 +41,12 @@ function init() {
 	Lobe = window.Lobe;
 	Lobe.init();
 	initializeDarkFloor();
-	// Lobe.editor = new Lobe.Editor();
+	Lobe.editor = new Lobe.Editor();
+	Lobe.editor.replaceRoom = false;
 	stage = new createjs.Stage("canvas");
-	inEditMode = false;
+	Lobe.editMode = false;
+
+	createTileFigures();
 
 	setupGame1();
 	createjs.Ticker.addEventListener("tick", tick);
@@ -102,18 +105,29 @@ function drawPlayer() {
 
 }
 
+function createTileFigures() {
+	var yellowFloor = {
+		create: function() {
+			return window.lobe.SpriteManager.getFloorSprite('yellowFloor');
+		} 
+	};
+
+	Lobe.figures.put('yellowFloor', yellowFloor);
+}
+
 
 function toggleEditMode() {
-	inEditMode = !inEditMode;
-	// Lobe.toggleEditMode();
+
+
+	Lobe.toggleEditMode();
 	// player.saveRoom inEditMode
 	// player.loadRoom inEditMode
-	if (inEditMode) {
+
+	if (Lobe.editMode) {
 		displayText("Edit Mode!");	
 	} else {
 		displayText("Game Mode!");
 	}
-	stage.removeChild(Lobe.player.stageObject);
 }
 
 function tick(event) {
@@ -163,7 +177,7 @@ if(!e){ var e = window.event; }
 			break;
 		}
 		default:
-			if (inEditMode) {
+			if (Lobe.editMode) {
 				editWithKeyCode(e.keyCode);
 			}
 	}
@@ -172,27 +186,25 @@ if(!e){ var e = window.event; }
 function editWithKeyCode(key) {
 	switch(key) {
 		case KEYCODE_A:	{
-			var tile = room.tileAt(Lobe.player.point.x, Lobe.player.point.y);
-			var floorSprite = window.lobe.SpriteManager.getFloorSprite('darkFloor');
-			tile.replaceObject(floorSprite);
+			Lobe.editor.placeTile('yellowFloor');
 			break;
 		}
 		case KEYCODE_B: {
-			var tile = room.tileAt(Lobe.player.point.x, Lobe.player.point.y);
-			var floorSprite = window.lobe.SpriteManager.getFloorSprite('yellowFloor');
-			tile.replaceObject(floorSprite);
+			Lobe.editor.placeTile('yellowFloor');
 			break;
 		}
 		case KEYCODE_C:	{
-			var tile = room.tileAt(Lobe.player.point.x, Lobe.player.point.y);
-			var floorSprite = window.lobe.SpriteManager.getFloorSprite('brightFloor');
-			tile.replaceObject(floorSprite);
+			Lobe.editor.placeTile('darkFloor');
 			break;
 		}
 		case KEYCODE_D:  {
 			break;
 		}
 		case KEYCODE_E: {
+			break;
+		}
+		case KEYCODE_S: {
+			displayText(Lobe.editor.saveRoomToString());
 			break;
 		}
 	}
@@ -213,7 +225,7 @@ function displayText(string) {
 
 function setupGame1() {
 
-	room = new Lobe.Room(stage, Lobe.figures.get('darkFloor'));
+	room = new Lobe.Room(stage);
 	drawLines();
 	drawPlayer();
 
@@ -232,13 +244,17 @@ function setupGame1() {
 			} 
 		};
 
-		Lobe.figures.put('greyTile', greyFigure);
-		room = new Lobe.Room(stage, Lobe.figures.get('greyTile'));
-		drawLines();
-		drawPlayer();
+		// Lobe.figures.put('greyTile', greyFigure);
+		// room = new Lobe.Room(stage, Lobe.figures.get('greyTile'));
+		// drawLines();
+		// drawPlayer();
 	};
 
 	room.onOutOfBoundsMove = function(p) {
+	};
+
+	room.onEnterFinishMove = function(p) {
+
 	};
 }
 
@@ -264,6 +280,10 @@ function setupGame2() {
 	};
 	room.onOutOfBoundsMove = function(p) {
 		Lobe.player.replaceObject(sprite3);
+	};
+
+	room.onEnterFinishMove = function(p) {
+
 	};
 }
 

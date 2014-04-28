@@ -139,7 +139,7 @@ export class RoomFile {
   finish: Point;
   constructor(data?: any) {
     this.tileLayer = [];
-    this.maskLyaer = [];
+    this.maskLayer = [];
     for (var i:number=0; i < rows; i++) {
       this.tileLayer[i] = [];
       this.maskLayer[i] = [];
@@ -256,10 +256,10 @@ export class Room {
 }
 export var editor: Editor;
 export function toggleEditMode() {
-  if (!editMode) {
-    editor.enterEditMode();
-  } else {
+  if (editMode) {
     editor.leaveEditMode();
+  } else {
+    editor.enterEditMode();
   }
 }
 
@@ -304,7 +304,7 @@ export class Editor {
     this.unstageTiles();
     player.room.visitTilesXY((tile: Tile, x: number, y: number) => {
         if (this.replaceRoom) {
-          player.room.masks[y][x] = player.room.roomFile.maskLayer[y][x];
+          player.room.mask[y][x] = player.room.roomFile.maskLayer[y][x];
         } else {
           tile.replaceObject(this.savedFigures[y][x]);
         }

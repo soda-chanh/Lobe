@@ -53,11 +53,11 @@ export class StagedObject {
   restage(stage?: any):void {
     var oldStage:any;
     oldStage = this.stagedObject.getStage();
-    if (stage != null) {
-      stage.addChild(this.stagedObject);
-    }
     if (oldStage != null) {
       oldStage.removeChild(this.stagedObject);
+    }
+    if (stage != null) {
+      stage.addChild(this.stagedObject);
     }
     this.resetPos();
   }

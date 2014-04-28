@@ -54,6 +54,7 @@ function init() {
 	Lobe.editMode = false;
 
 	createTileFigures();
+	window.lobe.SpriteManager.registerTiles();
 
 	setupGame1();
 	createjs.Ticker.addEventListener("tick", tick);
@@ -68,22 +69,6 @@ function initializeDarkFloor() {
 	};
 	Lobe.figures.put('darkFloor', floorFigure);
 }
-
-// function drawRoom() {
-// 	var redFigure = {
-// 		create: function() {
-// 			var shape = new createjs.Shape();
-// 			shape.graphics.beginFill("#ff0000").drawRect(0,0, Lobe.tileW, Lobe.tileH);
-// 			return shape;
-// 		} 
-// 	};
-
-// 	Lobe.figures.put('redTile', redFigure);
-	
-// 	room = new Lobe.Room(stage, Lobe.figures.get('redTile'));
-
-// 	drawLines();
-// }
 
 function drawLines() {
 			// draw lines
@@ -118,17 +103,43 @@ function createTileFigures() {
 			return window.lobe.SpriteManager.getFloorSprite('yellowFloor');
 		} 
 	};
+	var brightFloor = {
+		create: function() {
+			return window.lobe.SpriteManager.getFloorSprite('brightFloor');
+		} 
+	};
+	var blackFigure = {
+		create: function() {
+			var blackSquare = new createjs.Shape();
+ 			blackSquare.graphics.beginFill("#000000").drawRect(0, 0, Lobe.tileW, Lobe.tileH);
+ 			return blackSquare;
+		} 
+	};
+	var goalOutline = {
+		create: function() {
+			var outlined = new createjs.Shape();
+ 			outlined.graphics.beginFill("#ff0000").drawRect(0, 0, Lobe.tileW, Lobe.tileH);
+ 			outlined.graphics.beginFill("#000000").drawRect(5, 5, Lobe.tileW-10, Lobe.tileH-10);
+ 			return outlined;
+		} 
+	};
 
 	Lobe.figures.put('yellowFloor', yellowFloor);
+	Lobe.figures.put('brightFloor', brightFloor);
+	Lobe.figures.put('blackFigure', blackFigure);
+	Lobe.figures.put('goalOutline', goalOutline);
 }
 
 
 function toggleEditMode() {
 	Lobe.toggleEditMode();
+	var textArea = document.getElementById("textArea");
 	if (Lobe.editMode) {
 		displayText("Edit Mode!");	
+		textArea.style.display='block';
 	} else {
 		displayText("Game Mode!");
+		textArea.style.display='none';
 	}
 }
 
@@ -192,31 +203,35 @@ function editWithKeyCode(key) {
 			break;
 		}
 		case KEYCODE_B: {
-			Lobe.editor.placeTile('yellowFloor');
+			Lobe.editor.placeTile('brightFloor');
 			break;
 		}
 		case KEYCODE_C:	{
 			Lobe.editor.placeTile('darkFloor');
 			break;
 		}
-		case KEYCODE_S: {
-			console.log('hey');
-			var s = Lobe.editor.saveRoomToString();
-			displayText(s);
-			var textArea = document.getElementById("textArea");
-			console.log('textArea = ' +textArea);
-			document.getElementById("textArea").style.display='block';
-			document.getElementById("textArea").value = s;
-			console.log(s);
+		case KEYCODE_M: {
+			// Mask
+			Lobe.editor.toggleMask();
 			break;
 		}
-		case KEYCODE_M: {
-			Lobe.editor.toggleMask();
+		case KEYCODE_S: {
+			// Save
+			var s = Lobe.editor.saveRoomToString();
+			var textArea = document.getElementById("textArea");
+			textArea.value = s;
+			break;
+		}
+		case KEYCODE_L: {
+			// Load
+			var textArea = document.getElementById("textArea");
+			console.log(typeof(textArea.value));
+			Lobe.editor.loadRoom(textArea.value);
 			break;
 		}
 		default: {
 			var mm = key - KEYCODE_A;
-			if (mm >= 0) {
+			if (mm >= 0 && mm < Lobe.figures.values.length) {
 				Lobe.editor.placeTile(Lobe.figures.key(mm));
 			}
 			break;
@@ -230,8 +245,8 @@ function displayText(string) {
 		stage.removeChild(textDisplay);
 	}
 	textDisplay = new createjs.Text(string, "20px Arial", "#000000"); 
-	textDisplay.x = 50;
-	textDisplay.y = 650; 
+	textDisplay.x = 820;
+	textDisplay.y = 100; 
 	textDisplay.textBaseline = "alphabetic";
 	stage.addChild(textDisplay);
 }
@@ -239,36 +254,52 @@ function displayText(string) {
 
 function setupGame1() {
 
-	room = new Lobe.Room(stage);
+	console.log('manager = ' + window.lobe.RoomManager);
+
+	var roomData = window.lobe.RoomManager.room1Data();
+	room = new Lobe.Room(stage, roomData);
+	room.retileAll(Lobe.figures.get('blackFigure'));
+	room.finish = new Lobe.Point(Lobe.cols-1, Lobe.rows-1);
+
+	var goalTile = room.tileAt(Lobe.cols-1, Lobe.rows-1);
+	console.log(goalTile);
+	goalTile.updateFigure(Lobe.figures.get('goalOutline'));
+
 	drawLines();
 	drawPlayer();
 
+	var wallIdx = 0;
+	var walls = [];
 	room.onWallMove = function(p) {
+		if (walls[wallIdx % 3]) {
+			walls[wallIdx % 3].stagedObject.alpha = 1;
+		}
+		walls[wallIdx % 3] = room.tileAt(p.x, p.y);
+		walls[wallIdx % 3].stagedObject.alpha = .7;
+		wallIdx += 1;
 	};
 
 	room.onSuccessfulMove = function(p) {
 
+		if (walls[wallIdx % 3]) {
+			walls[wallIdx % 3].stagedObject.alpha = 1;
+		}
 		// on Win Game
 		displayText('Level 1');
-		var greyFigure = {
-			create: function() {
-				var shape = new createjs.Shape();
-				shape.graphics.beginFill("#444444").drawRect(0, 0, Lobe.tileW, Lobe.tileH);
-				return shape;
-			} 
-		};
-
-		// Lobe.figures.put('greyTile', greyFigure);
-		// room = new Lobe.Room(stage, Lobe.figures.get('greyTile'));
-		// drawLines();
-		// drawPlayer();
 	};
 
 	room.onOutOfBoundsMove = function(p) {
 	};
 
 	room.onEnterFinishMove = function(p) {
+		displayText('Finished Level 1! Now you can see....');
 
+		for (var i = 0; i<Lobe.cols; i++) {
+			for (var j = 0; j<Lobe.rows; j++) {
+				var tile = room.tileAt(i, j);
+
+			}
+		}
 	};
 }
 

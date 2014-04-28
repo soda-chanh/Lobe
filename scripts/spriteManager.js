@@ -12,16 +12,17 @@
 		} else {
 			var frames = [];
 			var animations = {};
-			for (var i=0; i < 6; i++) {
+			for (var l=0; l < 6; l++) {
 				for (var j=0; j < 8; j++) {
-					frames[i * 8 + j] = [j * 32, i * 32, 32, 32, 0];
+					frames[l * 8 + j] = [j * 32, l * 32, 32, 32, 0];
 				}
 			}
+			console.log(frames);
 			animations.brightFloor = 5;
 			animations.yellowFloor = 2;
 			animations.darkFloor = 3;
 			for (var k=0; k < 48; k++) {
-				animations["tile" + k.toString()] = k+1;
+				animations["tile" + k.toString()] = k;
 			}
 			var spriteData = {
 				images: ["resources/floorTiles2.png"],
@@ -60,11 +61,11 @@
 	};
 	self.registerTiles = function () {
 		var s = "tile"; 
-		for (var i=0; i < 48; i++) {
+		for (var p=0; p < 48; p++) {
 			(function (j) {
 				window.Lobe.figures.put('tile' + j.toString(),
 					self.getFloorFigure('tile' + j.toString()));
-				})(i);
+				})(p);
 		}
 	};
 	self.getFloorFigure = function (str) {

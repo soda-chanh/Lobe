@@ -279,8 +279,10 @@ export class Editor {
     }
     this.maskAlpha = .5;
     this.replaceRoom = true;
+    this.useMaskLayer = false;
   }
   replaceRoom: boolean;
+  useMaskLayer:boolean;
   maskAlpha: number;
   maskTiles: Tile[][];
   savedFigures: any[][];
@@ -302,18 +304,28 @@ export class Editor {
   }
   leaveEditMode() {
     this.unstageTiles();
+    if (this.replaceRoom) {
+      player.room.start.x = player.room.roomFile.start.x;
+      player.room.start.y = player.room.roomFile.start.y;
+      player.room.finish.x = player.room.roomFile.finish.x;
+      player.room.finish.y = player.room.roomFile.finish.y;
+    }
     player.room.visitTilesXY((tile: Tile, x: number, y: number) => {
         if (this.replaceRoom) {
           player.room.mask[y][x] = player.room.roomFile.maskLayer[y][x];
+          tile.stagedObject.alpha = 1;
         } else {
           tile.replaceObject(this.savedFigures[y][x]);
         }
       });
+    player.forcedMoveTo(player.room.start.x, player.room.start.y);
     editMode = false;
   }
   placeTileAt(figureName: string, x: number, y: number) {
     var tile:Tile = player.room.tileAt(x, y);
+    var oldAlpha: number = tile.stagedObject.alpha;
     tile.updateFigure(figures.get(figureName));
+    tile.stagedObject.alpha = oldAlpha;
     player.room.roomFile.tileLayer[y][x] = figures.indexOf(figureName);
   }
   placeTile(figureName: string) {
@@ -323,28 +335,46 @@ export class Editor {
     var roomFile: RoomFile = player.room.roomFile;
     var x: number = player.point.x;
     var y: number = player.point.y;
+    var tile: Tile = player.room.tileAt(x,y);
     var maskTile: Tile = this.maskTiles[y][x];
     if (roomFile.maskLayer[y][x] == 0) {
-      var tile:Tile = player.room.tileAt(x, y);
       roomFile.maskLayer[y][x] = 1;
-      maskTile.stagedObject.alpha = this.maskAlpha;
+      if (this.useMaskLayer) {
+        maskTile.stagedObject.alpha = this.maskAlpha;
+      } else {
+        tile.stagedObject.alpha = 1 - this.maskAlpha;
+      }
     } else {
       roomFile.maskLayer[y][x] = 0;
+      if (this.useMaskLayer) {
+        maskTile.stagedObject.alpha = 0;
+      } else {
+        tile.stagedObject.alpha = 1;
+      }
       maskTile.stagedObject.alpha = 0;
     }
   }
   refreshRoom() {
     player.room.visitTilesXY((tile: Tile, x: number, y: number) => {
         tile.updateFigure(figures.values[player.room.roomFile.tileLayer[y][x]]);
-      });
-    for (var i: number; i < rows; i++) {
-      for (var j: number; j < rows; j++) {
-        if (player.room.roomFile.maskLayer[i][j] == 0) {
-          this.maskTiles[i][j].stagedObject.alpha = 0;
-        } else {
-          this.maskTiles[i][j].stagedObject.alpha = .5;
+        if (!this.useMaskLayer) {
+          if (player.room.roomFile.maskLayer[y][x] == 0) {
+            tile.stagedObject.alpha = 1;
+          } else {
+            tile.stagedObject.alpha = 1 - this.maskAlpha;
+          }
         }
-        this.maskTiles[i][j].restage(player.room.stage);
+      });
+    if (this.useMaskLayer) {
+      for (var i: number=0; i < rows; i++) {
+        for (var j: number=0; j < cols; j++) {
+          if (player.room.roomFile.maskLayer[i][j] == 0) {
+            this.maskTiles[i][j].stagedObject.alpha = 0;
+          } else {
+            this.maskTiles[i][j].stagedObject.alpha = this.maskAlpha;
+          }
+          this.maskTiles[i][j].restage(player.room.stage);
+        }
       }
     }
   }
@@ -384,6 +414,11 @@ export class Player implements StagedObject {
     this.addToStage(this.room.stage);
   }
   point: Point;
+  forcedMoveTo(x: number, y: number) {
+    this.point.x = x;
+    this.point.y = y;
+    this.posAt(x, y);
+  }
   moveTo(x: number, y: number) {
     if (x >= 0 && x < cols && y >= 0 && y < rows) {
       if (!editMode && this.room.isMasked(x, y)) {
@@ -398,7 +433,7 @@ export class Player implements StagedObject {
           this.room.onSuccessfulMove(p);
         }
         this.posAt(x, y);
-        if (x == this.room.finish.x && y == this.room.finish.y) {
+        if (!editMode && x == this.room.finish.x && y == this.room.finish.y) {
           this.room.onEnterFinishMove(p);
         }
       }

@@ -203,6 +203,10 @@ function editWithKeyCode(key) {
 		case KEYCODE_E: {
 			break;
 		}
+		case KEYCODE_M: {
+			Lobe.editor.toggleMask();
+			break;
+		}
 		case KEYCODE_S: {
 			var s = Lobe.editor.saveRoomToString();
 			displayText(s);

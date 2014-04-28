@@ -74,7 +74,7 @@ export class Tile implements StagedObject {
   stagePoint: Point;
   posAt: (x:number, y: number) => void;
   updateFigure: (figure: Figure) => void;
-replaceObject: (object: any) => void;
+  replaceObject: (object: any) => void;
   addToStage: (stage: any) => void;
   resetPos: () => void;
   restage: (stage?: any) => void;
@@ -138,6 +138,8 @@ export class RoomFile {
   start: Point;
   finish: Point;
   constructor(data?: any) {
+    this.tileLayer = [];
+    this.maskLyaer = [];
     for (var i:number=0; i < rows; i++) {
       this.tileLayer[i] = [];
       this.maskLayer[i] = [];
@@ -252,16 +254,16 @@ export class Room {
     }
   }
 }
-var editor: Editor;
+export var editor: Editor;
 export function toggleEditMode() {
-  if (editMode) {
+  if (!editMode) {
     editor.enterEditMode();
   } else {
     editor.leaveEditMode();
   }
 }
 
-var editMode: boolean;
+export var editMode: boolean = false;
 
 export class Editor {
   constructor() {
